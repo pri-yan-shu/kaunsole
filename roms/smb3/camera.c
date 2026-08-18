@@ -35,6 +35,26 @@ const uint16_t blocks[256][4] = {
     { TILE(7, 29, 12), TILE(7, 29, 13), TILE(7, 29, 14), TILE(7, 29, 15) }, /* brick */
     { TILE(1, 7, 12), TILE(1, 7, 13), TILE(1, 7, 14), TILE(1, 7, 15) }, /* wood */
     { TILE(3, 22, 0), TILE(3, 22, 1), TILE(3, 22, 2), TILE(3, 22, 3) }, /* pin_box */
+    { TILE(7, 27, 8), TILE(7, 27, 9), TILE(7, 27, 10), TILE(7, 27, 11) }, /* note_block */
+    { TILE(7, 25, 8), TILE(7, 25, 9), TILE(7, 25, 10), TILE(7, 25, 11) }, /* qmark_block */
+    { TILE(3, 0, 10), TILE(3, 0, 11), TILE(3, 0, 12), TILE(3, 0, 13) }, /* shiny_block */
+    { TILE(2, 9, 0), TILE(2, 9, 1), TILE(2, 9, 2), TILE(2, 9, 3) }, /* u_block */
+    { TILE(6, 16, 10), TILE(6, 17, 10), TILE(6, 16, 11), TILE(6, 17, 11) }, /* vwood_tl */
+    { TILE(6, 16, 12), TILE(6, 17, 12), TILE(6, 16, 13), TILE(6, 17, 13) }, /* vwood_tr */
+    { TILE(6, 18, 10), TILE(6, 19, 10), TILE(6, 18, 11), TILE(6, 19, 11) }, /* vwood_bl */
+    { TILE(6, 18, 12), TILE(6, 19, 12), TILE(6, 18, 13), TILE(6, 19, 13) }, /* vwood_br */
+    { TILE(6, 1, 0), TILE(6, 1, 2), TILE(6, 0, 14), TILE(7, 31, 13) }, /* bpin_tl */
+    { TILE(6, 0, 14), TILE(7, 31, 13), TILE(6, 0, 14), TILE(7, 31, 13) }, /* bpin_tm */
+    { TILE(6, 0, 14), TILE(7, 31, 13), TILE(6, 1, 1), TILE(6, 1, 5) }, /* bpin_tr */
+    { TILE(6, 1, 2), TILE(6, 1, 2), TILE(7, 31, 13), TILE(7, 31, 13) }, /* bpin_ml */
+    { TILE(7, 31, 13), TILE(7, 31, 13), TILE(7, 31, 13), TILE(7, 31, 13) }, /* bpin_mm */
+    { TILE(7, 31, 13), TILE(7, 31, 13), TILE(6, 1, 5), TILE(6, 1, 5) }, /* bpin_mr */
+    { TILE(6, 1, 2), TILE(6, 1, 6), TILE(7, 31, 13), TILE(6, 0, 12) }, /* bpin_bl */
+    { TILE(7, 31, 13), TILE(6, 0, 12), TILE(7, 31, 13), TILE(6, 0, 12) }, /* bpin_bm */
+    { TILE(7, 31, 13), TILE(6, 0, 12), TILE(6, 1, 5), TILE(6, 1, 7) }, /* bpin_br */
+
+    
+
 };
 
 const struct obj1d objs1d[256] = {
@@ -90,6 +110,42 @@ const struct obj1d objs1d[256] = {
         .start = 22,
         .flags = O1_MIDDLE
     },
+    (struct obj1d) /* NOTE_BLOCK */{
+        .start = 23,
+        .flags = O1_MIDDLE
+    },
+    (struct obj1d) /* QMARK_BLOCK */{
+        .start = 24,
+        .flags = O1_MIDDLE
+    },
+    (struct obj1d) /* SHINY_BLOCK */{
+        .start = 25,
+        .flags = O1_MIDDLE
+    },
+    (struct obj1d) /* U_BLOCK */{
+        .start = 26,
+        .flags = O1_MIDDLE
+    },
+    (struct obj1d)/* VWOOD_TOP */{
+        .start = 27,
+        .flags = O1_MIDDLE
+    },
+    (struct obj1d)/* VWOOD_BOTTOM */{
+        .start = 29,
+        .flags = O1_MIDDLE
+    },
+    (struct obj1d)/* BPIN_TOP */{
+        .start = 31,
+        .flags = O1_TERMINAL | O1_MIDDLE
+    },
+    (struct obj1d)/* BPIN_MIDDLE */{
+        .start = 34,
+        .flags = O1_TERMINAL | O1_MIDDLE
+    },
+    (struct obj1d)/* BPIN_BOTTOM */{
+        .start = 37,
+        .flags = O1_TERMINAL | O1_MIDDLE
+    },
 };
 
 const struct obj2d objs2d[256] = {
@@ -114,7 +170,7 @@ const struct obj2d objs2d[256] = {
     (struct obj2d){
         // PIPE
         .start = (uint16_t []) { O1(7, 0), O1(8, 0), O1(8, 0)},
-        .flags =  O2_TERMINAL | O2_MIDDLE,
+        .flags =  O2_VERTICAL | O2_TERMINAL | O2_MIDDLE,
     },
     (struct obj2d){
         // CLOUD
@@ -135,6 +191,36 @@ const struct obj2d objs2d[256] = {
         // PIN_BOX
         .start = (uint16_t []) { O1(12, 0), O1(12, 0), O1(12, 0)},
         .flags = O2_VERTICAL,
+    },
+    (struct obj2d){
+        // NOTE_BLOCK
+        .start = (uint16_t []) { O1(13, 0), O1(13, 0), O1(13, 0)},
+        .flags = O2_VERTICAL,
+    },
+    (struct obj2d){
+        // QMARK_BLOCK
+        .start = (uint16_t []) { O1(14, 0), O1(14, 0), O1(14, 0)},
+        .flags = O2_VERTICAL,
+    },
+    (struct obj2d){
+        // SHINY_BLOCK
+        .start = (uint16_t []) { O1(15, 0), O1(15, 0), O1(15, 0)},
+        .flags = O2_VERTICAL,
+    },
+    (struct obj2d){
+        // U_BLOCK
+        .start = (uint16_t []) { O1(16, 0), O1(16, 0), O1(16, 0)},
+        .flags = O2_VERTICAL,
+    },
+    (struct obj2d){
+        // VWOOD
+        .start = (uint16_t []) { O1(17, 0), O1(18, 0), O1(18, 0)},
+        .flags =  O2_VERTICAL | O2_TERMINAL | O2_MIDDLE,
+    },
+    (struct obj2d){
+        // BPIN
+        .start = (uint16_t []) { O1(19, 0), O1(20, 0), O1(21, 0)},
+        .flags =  O2_VERTICAL | O2_TERMINAL | O2_MIDDLE,
     },
 };
 
