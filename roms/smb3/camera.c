@@ -27,6 +27,14 @@ const uint16_t blocks[256][4] = {
     { TILE(1, 18, 0), TILE(1, 19, 0), TILE(1, 18, 1), TILE(1, 19, 1) }, /* hwood_bl */
     { TILE(1, 18, 1), TILE(1, 19, 1), TILE(1, 18, 1), TILE(1, 19, 1) }, /* hwood_bm */
     { TILE(1, 18, 1), TILE(1, 19, 1), TILE(1, 18, 2), TILE(1, 19, 2) }, /* hwood_br */
+    { TILE(7, 24, 12), TILE(7, 25, 12), TILE(7, 24, 13), TILE(7, 25, 13) }, /* pipe_tl */
+    { TILE(7, 24, 14), TILE(7, 25, 14), TILE(7, 24, 15), TILE(7, 25, 15) }, /* pipe_tr */
+    { TILE(7, 26, 12), TILE(7, 26, 12), TILE(7, 26, 13), TILE(7, 26, 13) }, /* pipe_bl */
+    { TILE(7, 26, 14), TILE(7, 26, 14), TILE(7, 26, 15), TILE(7, 26, 15) }, /* pipe_br */
+    { TILE(6, 2, 0), TILE(6, 3, 0), TILE(6, 2, 1), TILE(6, 3, 1) }, /* cloud */
+    { TILE(7, 29, 12), TILE(7, 29, 13), TILE(7, 29, 14), TILE(7, 29, 15) }, /* brick */
+    { TILE(1, 7, 12), TILE(1, 7, 13), TILE(1, 7, 14), TILE(1, 7, 15) }, /* wood */
+    { TILE(3, 22, 0), TILE(3, 22, 1), TILE(3, 22, 2), TILE(3, 22, 3) }, /* pin_box */
 };
 
 const struct obj1d objs1d[256] = {
@@ -58,9 +66,29 @@ const struct obj1d objs1d[256] = {
         .start = 12,
         .flags = O1_TERMINAL | O1_MIDDLE,
     },
-    (struct obj1d) /* O_WOOD_BOTTOM */{
-        .start = 12,
-        .flags = O1_TERMINAL | O1_MIDDLE,
+    (struct obj1d)/* PIPE_CAGE */{
+        .start = 15,
+        .flags = O1_MIDDLE
+    },
+    (struct obj1d)/* PIPE_SHAFT */{
+        .start = 17,
+        .flags = O1_MIDDLE
+    },
+    (struct obj1d) /* CLOUD */{
+        .start = 19,
+        .flags = O1_MIDDLE
+    },
+    (struct obj1d) /* BRICK */{
+        .start = 20,
+        .flags = O1_MIDDLE
+    },
+    (struct obj1d) /* WOOD */{
+        .start = 21,
+        .flags = O1_MIDDLE
+    },
+    (struct obj1d) /* PIN_BOX */{
+        .start = 22,
+        .flags = O1_MIDDLE
     },
 };
 
@@ -82,6 +110,31 @@ const struct obj2d objs2d[256] = {
         .start = (uint16_t []) { O1(5, 0), O1(6, 0) },
         // .start = (uint16_t []) { O1_INDEX(2) | O1_X(0), O1_INDEX(3) | O1_X(0), O1_INDEX(3) | O1_X(0)},
         .flags = O2_VERTICAL | O2_TERMINAL | O2_MIDDLE,
+    },
+    (struct obj2d){
+        // PIPE
+        .start = (uint16_t []) { O1(7, 0), O1(8, 0), O1(8, 0)},
+        .flags =  O2_TERMINAL | O2_MIDDLE,
+    },
+    (struct obj2d){
+        // CLOUD
+        .start = (uint16_t []) { O1(9, 0), O1(9, 0), O1(9, 0)},
+        .flags = O2_VERTICAL,
+    },
+    (struct obj2d){
+        // BRICK
+        .start = (uint16_t []) { O1(10, 0), O1(10, 0), O1(10, 0)},
+        .flags = O2_VERTICAL,
+    },
+    (struct obj2d){
+        // WOOD
+        .start = (uint16_t []) { O1(11, 0), O1(11, 0), O1(11, 0)},
+        .flags = O2_VERTICAL,
+    },
+    (struct obj2d){
+        // PIN_BOX
+        .start = (uint16_t []) { O1(12, 0), O1(12, 0), O1(12, 0)},
+        .flags = O2_VERTICAL,
     },
 };
 
