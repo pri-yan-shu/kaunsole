@@ -4,6 +4,7 @@
 
 #include "collision.h"
 #include "enemy.h"
+#include "enemy_types.h"
 #include "../../src/engine.h"
 #include "../../src/rom.h"
 #include "../../src/sprite.h"
@@ -26,12 +27,12 @@
 
 const uint32_t map[] = {
     O2(15, 0, 11, 1, 1, 1),
-    O2(9, 4, 8, 0, 1, 2),
+    O2(20, 4, 8, 0, 1, 2),
     O2(5, 8, 8, 0, 1, 3),
-    O2(9, 9, 8, 0, 1, 2),
+    O2(20, 9, 8, 0, 1, 2),
     O2(5, 10, 8, 0, 1, 3),
     O2(5, 10, 5, 0, 1, 3),
-    O2(9, 11, 8, 0, 1, 2),
+    O2(20, 11, 8, 0, 1, 2),
     O2(5, 12, 8, 0, 1, 3),
     O2(15, 11, 11, 3, 1, 1),
     O2(5, 0, 12, 15, 4, 3) | O2_NEXT_PAGE, //SCREEN 0
@@ -87,40 +88,6 @@ static const struct texture tex_none = {
     .num_frames = 1,
 };
 
-static const struct texture tex_koopa_run = {
-    .height = 4,
-    .width = 2,
-    .tiles = (uint16_t []){ TILE(9,28,1), TILE(9,28,0),
-                            TILE(9,28,2), TILE(9,28,4),
-                            TILE(9,28,3), TILE(9,28,5),
-                            TILE(9,28,6), TILE(9,28,8),
-
-                            TILE(9,28,1), TILE(9,28,0),
-                            TILE(9,28,10), TILE(9,28,4),
-                            TILE(9,28,11), TILE(9,28,5),
-                            TILE(9,31,8), TILE(9,31,10),
-    },
-    .num_frames = 2,
-};
-
-static const struct texture tex_koopa_shell = {
-    .height = 2,
-    .width = 2,
-    .tiles = (uint16_t []){ TILE(9,29,0), TILE(9,29,0) | TILE_Y_MIRROR,
-                            TILE(9,29,1), TILE(9,29,1) | TILE_Y_MIRROR,
-
-                            TILE(9,29,4) | TILE_Y_MIRROR, TILE(9,29,2) | TILE_Y_MIRROR,
-                            TILE(9,29,5) | TILE_Y_MIRROR, TILE(9,29,3) | TILE_Y_MIRROR,
-
-                            TILE(9,31,12), TILE(9,31,12) | TILE_Y_MIRROR,
-                            TILE(9,31,13), TILE(9,31,13) | TILE_Y_MIRROR,
-
-                            TILE(9,29,2), TILE(9,29,4),
-                            TILE(9,29,3), TILE(9,29,5),
-    },
-    .num_frames = 4,
-};
-
 static const struct texture tex_coin_anim = {
     .height = 2,
     .width = 2,
@@ -158,36 +125,6 @@ static const struct texture tex_star_p = {
     .num_frames = 1,
 };
 
-static const struct texture tex_goomba_stand = {
-    .height = 2,
-    .width = 2,
-    .tiles = (uint16_t[]){TILE(9, 29, 8), TILE(9, 29, 8) | TILE_Y_MIRROR,
-                          TILE(9, 29, 9),TILE(9, 29, 9) | TILE_Y_MIRROR,
-                        },
-    .num_frames = 1,
-};
-
-static const struct texture tex_goomba_run = {
-    .height = 2,
-    .width = 2,
-    .tiles = (uint16_t[]){TILE(9, 29, 8), TILE(9, 29, 8) | TILE_Y_MIRROR, 
-                          TILE(9, 29, 9),TILE(9, 29, 11) | TILE_Y_MIRROR,
-
-                          TILE(9, 29, 8), TILE(9, 29, 8) | TILE_Y_MIRROR,
-                          TILE(9, 29, 11), TILE(9, 29, 9) | TILE_Y_MIRROR
-                        },
-    .num_frames = 2,
-};
-
-static const struct texture tex_goomba_die = {
-    .height = 2,
-    .width = 2,
-    .tiles = (uint16_t[]){TILE(9, 31, 11), TILE(9, 31, 11), 
-                          TILE(9, 30, 11),TILE(9, 30, 11) | TILE_Y_MIRROR,
-                        },
-    .num_frames = 1,
-};
-
 static const struct texture tex_bullet_b = {
     .height = 2,
     .width = 2,
@@ -196,6 +133,13 @@ static const struct texture tex_bullet_b = {
                         },
     .num_frames = 1,
 };
+
+// static const struct texture tex_none = {
+//     .height = 2,
+//     .width = 2,
+//     .tiles = (uint16_t[]){ TILE(0, 3, 0), TILE(0, 3, 0), TILE(0, 3, 0), TILE(0, 3, 0) },
+//     .num_frames = 1,
+// };
 
 static const struct texture tex_mario_stand = {
     .height = 2,
@@ -343,11 +287,62 @@ void run() {
     }
 }
 
+
+uint8_t coin_count = 0;
+
 extern uint8_t camera_x;
 extern uint8_t camera_y;
 extern uint8_t active_screen;
+extern uint8_t read_offset;
+extern uint8_t write_offset;
+extern uint8_t screen_x;
+extern uint16_t map_x;
+
 
 uint8_t tile_attr = 0;
+
+static uint16_t camera_world_x(void) {
+    return (uint16_t)active_screen * CAMERA_WIDTH + camera_x;
+}
+
+static uint16_t wrap_world_x(int32_t x) {
+    const int32_t world_width = N_SCREENS * CAMERA_WIDTH;
+    x %= world_width;
+    if (x < 0)
+        x += world_width;
+    return (uint16_t)x;
+}
+
+int16_t entity_screen_x(const struct entity *entity) {
+    const int16_t world_width = N_SCREENS * CAMERA_WIDTH;
+    int16_t entity_x = (int16_t)entity->world_screen * CAMERA_WIDTH + entity->world_x;
+    int16_t dx = entity_x - (int16_t)camera_world_x();
+
+    if (dx > world_width / 2)
+        dx -= world_width;
+    else if (dx < -(world_width / 2))
+        dx += world_width;
+
+    return dx;
+}
+
+bool entity_in_sim_zone(const struct entity *entity) {
+    if (entity->type == ENTITY_NONE || entity->type == ENTITY_KILLED)
+        return false;
+
+    int16_t x = entity_screen_x(entity);
+    return x >= 0 && x < SIM_ZONE_WIDTH;
+}
+
+bool entity_in_draw_zone(const struct entity *entity) {
+    if (entity->type == ENTITY_NONE || entity->type == ENTITY_KILLED)
+        return false;
+
+    int16_t x = entity_screen_x(entity);
+    return x > -16 && x < CAMERA_WIDTH;
+}
+
+
 
 void move_entity(struct entity *entity) {
     entity->x_accumulator += entity->x_vel;
@@ -359,15 +354,121 @@ void move_entity(struct entity *entity) {
     entity->x_accumulator -= x_pix;
     entity->y_accumulator -= y_pix;
 
-    entity->sprite.x += x_pix;
+    int16_t absolute_x = get_world_x(entity);
+    absolute_x += x_pix;
+
+    if (entity->sprite.hitbox.height > 0 && entity->sprite.hitbox.width > 0){
+        absolute_x = collide_entity_x(entity, absolute_x, x_pix);
+    }
+    
+    set_world_x(entity, absolute_x);
+
     entity->sprite.y += y_pix;
     if (entity->sprite.hitbox.height > 0 && entity->sprite.hitbox.width > 0){
-        collide_entity(entity, y_pix, x_pix);
+        collide_entity_y(entity, absolute_x, y_pix);
     }
     else{
         entity->falling = true;
     }
 }
+
+int16_t center;
+bool had_y = false;
+uint32_t cnt_update = 0;
+
+void reset_level(void) {
+    /* Reset runtime counters/state */
+    coin_count = 0;
+    cnt_update = 0;
+    center = 0;
+    had_y = false;
+
+    /* Reset camera + streaming ring state before reloading map */
+    camera_x = 0;
+    camera_y = 0;
+    active_screen = 0;
+    read_offset = 0;
+    write_offset = 0;
+    screen_x = 0;
+    map_x = 0;
+
+    /* Clear streamed block cache so coins/edited blocks do not persist */
+    for (uint8_t s = 0; s < N_SCREENS; s++) {
+        for (uint8_t y = 0; y < 16; y++) {
+            for (uint8_t x = 0; x < 16; x++) {
+                block_buffer[s][y][x].id = 0;
+                block_buffer[s][y][x].palette = 0;
+            }
+        }
+    }
+
+    /* Clear all entities first, including projectiles/reused slots */
+    for (uint8_t i = 0; i < NUM_ENTITIES; i++) {
+        entities[i] = (struct entity){0};
+        entities[i].type = ENTITY_NONE;
+    }
+
+    /* Recreate Mario */
+    entities[0] = (struct entity){
+        .type = ENTITY_PLAYER,
+        .sprite = {
+            .texture = &tex_mario_run,
+            .palette = 0,
+            .attributes = FLIP_X,
+            .x = 0,
+            .y = 0,
+            .hitbox = {
+                .x = 2,
+                .y = 0,
+                .height = 16,
+                .width = 12,
+            },
+        },
+        .world_screen = 0,
+        .world_x = 0,
+        .falling = false,
+        .sim_active = true,
+    };
+
+    /* Recreate box */
+    entities[1] = (struct entity){
+        .type = ENTITY_BOX,
+        .world_screen = 0,
+        .world_x = 4,
+        .sprite = {
+            .texture = &tex_box,
+            .palette = 0,
+            .attributes = 0,
+            .x = 4,
+            .y = 0,
+            .hitbox = {
+                .x = 0,
+                .y = 0,
+                .height = 16,
+                .width = 16,
+            },
+            .screen = 0,
+        },
+        .falling = false,
+    };
+
+    /* Recreate enemies */
+    enemy_init_at(&entities[2], 0, 192, 128, ENEMY_GOOMBA);
+    enemy_init_at(&entities[3], 1, 220, 128, ENEMY_TURTLE);
+    enemy_init_at(&entities[4], 5, 50, 128, ENEMY_DUCK);
+    enemy_init_at(&entities[5], 3, 100, 128, ENEMY_FIREBALL_SHOOTER);
+
+    /* Reload level geometry from the beginning */
+    load_map(map);
+
+    /* Project sprites after camera/map reset */
+    for (uint8_t i = 0; i < NUM_ENTITIES; i++) {
+        if (entities[i].type != ENTITY_NONE && entities[i].type != ENTITY_KILLED) {
+            entity_world_to_sprite(&entities[i], active_screen, camera_x);
+        }
+    }
+}
+
 
 void init() {
     engine.tileset = (struct tileset){
@@ -375,10 +476,14 @@ void init() {
     };
 
     engine.palette = palette;
-    enemy_init(&enemy1);
-    entities[0] = mario;
+    mario.type = ENTITY_PLAYER;
+    mario.world_screen = active_screen;
+    mario.world_x = camera_x + mario.sprite.x;
 
     entities[1] = (struct entity){
+        .type = ENTITY_BOX,
+        .world_screen = 0,
+        .world_x = 4,
         .sprite =
             {
                 .texture = &tex_box,
@@ -398,6 +503,16 @@ void init() {
 
         .falling = false,
     };
+    
+    enemy_init_at(&entities[2], 0, 192, 128, ENEMY_GOOMBA);
+    enemy_init_at(&entities[3], 1, 220, 128, ENEMY_TURTLE);
+    enemy_init_at(&entities[4], 5, 50, 128, ENEMY_DUCK);
+    enemy_init_at(&entities[5], 3, 100, 128, ENEMY_FIREBALL_SHOOTER);
+    
+    for (int i = 6; i < NUM_ENTITIES; i++) {
+        entities[i].type = ENTITY_NONE;
+    }
+
     font['0'] = TILE(11, 31, 0);
     font['1'] = TILE(11, 31, 1);
     font['2'] = TILE(11, 31, 2);
@@ -456,15 +571,18 @@ void init() {
 
 void entity_fall_kill(struct entity* entity){
     for(int8_t i = 0; i < NUM_ENTITIES; i++){
-        if((entity+i)->type != ENTITY_KILLED && (entity+i)->sprite.y > 240){
-            (entity+i)->sprite.texture = &tex_none;
-            (entity+i)->type = ENTITY_KILLED;
-            fprintf(stderr, "ENTITY KILLED %d\n", i);
+        if((entity+i)->type != ENTITY_NONE && (entity+i)->type != ENTITY_KILLED){
+            if (i == 0 || (entity+i)->sim_active) {
+                if ((entity+i)->sprite.y > 240) {
+                    (entity+i)->sprite.texture = &tex_none;
+                    (entity+i)->type = ENTITY_KILLED;
+                    fprintf(stderr, "ENTITY KILLED by fall%d\n", i);
+                }
+            }
         }
     }
 }
-bool had_y = false;
-uint32_t cnt_update = 0;
+
 
 void update(struct input input, uint32_t time) {
     float deltatime = (float)(time - gametime) / 1000;
@@ -476,12 +594,14 @@ void update(struct input input, uint32_t time) {
     if (input.start) {
         rom.running = false;
     }
-    if (mario.type == ENTITY_KILLED) {
+    if (input.select) {
+        reset_level();
         return;
     }
-    entity_fall_kill(entities);
-
-
+    if (mario.type == ENTITY_KILLED && cnt_update %120==0) {
+        reset_level();
+        return;
+    }
     if (input.b && !mario.falling) {
         jump();
     }
@@ -587,12 +707,43 @@ void update(struct input input, uint32_t time) {
     }
 
     move_entity(&mario);
-    int16_t center = mario.sprite.x - 128;
-    mario.sprite.x -= center;
+    
+    entity_world_to_sprite(&mario, active_screen, camera_x);
+    center = mario.sprite.x - 128;
     camera_move(0, center);
 
-    enemy_update(&enemy1, deltatime);
+    for (int i = 2; i < NUM_ENTITIES; i++) {
+        if (entities[i].type == ENTITY_ENEMY) {
+            enemy_update(&entities[i], deltatime);
+        } else if (entities[i].type == ENTITY_PROJECTILE) {
+            if (entities[i].state_timer > 0) {
+                entities[i].state_timer--;
+                
+                int16_t dist = real_world_distance(entities[i].world_screen, entities[i].world_x, active_screen, camera_x);
+                entities[i].sim_active = (dist >= -128 && dist < 384);
+                
+                if (entities[i].sim_active) {
+                    move_entity(&entities[i]);
+                }
+                
+                if (entities[i].state_timer == 0) {
+                    entities[i].type = ENTITY_KILLED;
+                }
+            }
+        }
+    }
+    
+    for (int i = 0; i < NUM_ENTITIES; i++) {
+        if (entities[i].type != ENTITY_NONE && entities[i].type != ENTITY_KILLED) {
+            entity_world_to_sprite(&entities[i], active_screen, camera_x);
+        }
+    }
+    
+    //check_mario_coin_collisions(&mario);
+
+    //enemy_update(&enemy1, deltatime);
     handle_entity_collisions(&mario, entities, NUM_ENTITIES);
+    entity_fall_kill(entities);
 
     if (mario.holding) {
         if (mario.sprite.attributes & FLIP_X)
@@ -658,13 +809,23 @@ void draw() {
     draw_chars(buf, font, 1, 0, 0);
     snprintf(buf, 64, "ACTIVE SCREEN %u", active_screen);
     draw_chars(buf, font, 2, 0, 0);
+    snprintf(buf, 64, "COINS %u", coin_count);
+    draw_chars(buf, font, 3, 0, 0);
 
     // draw_sprite(&box.sprite);
     if (mario.type != ENTITY_KILLED) {
         draw_sprite(&spr_mario);
     }
 
-    enemy_draw(&enemy1);
+    for (int i = 2; i < NUM_ENTITIES; i++) {
+        if (entities[i].type == ENTITY_ENEMY) {
+            enemy_draw(&entities[i]);
+        } else if (entities[i].type == ENTITY_PROJECTILE) {
+            if (entities[i].sim_active && entities[i].sprite.x >= 0 && entities[i].sprite.x < CAMERA_WIDTH) {
+                draw_sprite(&entities[i].sprite);
+            }
+        }
+    }
 
     // next_frame(&mario.entity.sprite);
 }

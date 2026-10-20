@@ -11,76 +11,83 @@
 // MAP
 
 extern uint16_t font[256];
+struct block_entry block_buffer[N_SCREENS][16][16];
 
 const uint16_t blocks[256][4] = {
-    { TILE(0, 3, 0), TILE(0, 3, 0), TILE(0, 3, 0), TILE(0, 3, 0) }, /* blank */
-    { TILE(6, 5, 3), TILE(6, 5, 4), TILE(6, 5, 5), TILE(6, 5, 6) }, /* xbox */
-    { TILE(6, 5, 7), TILE(6, 5, 7), TILE(6, 5, 8), TILE(6, 5, 8) }, /* pillar */
+    { TILE(0, 3, 0), TILE(0, 3, 0), TILE(0, 3, 0), TILE(0, 3, 0) }, /* 0 blank */
+    { TILE(6, 5, 3), TILE(6, 5, 4), TILE(6, 5, 5), TILE(6, 5, 6) }, /* 1 xbox */
+    { TILE(6, 5, 7), TILE(6, 5, 7), TILE(6, 5, 8), TILE(6, 5, 8) }, /* 2 pillar */
 
-    { TILE(1, 17, 6), TILE(1, 17, 7), TILE(1, 18, 6), TILE(1, 18, 7) }, /* grass_tl */
-    { TILE(1, 17, 8), TILE(1, 17, 9), TILE(1, 18, 8), TILE(1, 18, 9) }, /* grass_tm */
-    { TILE(1, 17, 10), TILE(1, 17, 11), TILE(1, 18, 10), TILE(1, 18, 11) }, /* grass_tr */
-    { TILE(1, 18, 6), TILE(1, 18, 7), TILE(1, 18, 6), TILE(1, 18, 7) }, /* grass_ml */
-    { TILE(1, 18, 8), TILE(1, 18, 9), TILE(1, 18, 8), TILE(1, 18, 9) }, /* grass_mm */
-    { TILE(1, 18, 10), TILE(1, 18, 11), TILE(1, 18, 10), TILE(1, 18, 11) }, /* grass_mr */
+    { TILE(1, 17, 6), TILE(1, 17, 7), TILE(1, 18, 6), TILE(1, 18, 7) }, /* 3 grass_tl */
+    { TILE(1, 17, 8), TILE(1, 17, 9), TILE(1, 18, 8), TILE(1, 18, 9) }, /* 4 grass_tm */
+    { TILE(1, 17, 10), TILE(1, 17, 11), TILE(1, 18, 10), TILE(1, 18, 11) }, /* 5 grass_tr */
+    { TILE(1, 18, 6), TILE(1, 18, 7), TILE(1, 18, 6), TILE(1, 18, 7) }, /* 6 grass_ml */
+    { TILE(1, 18, 8), TILE(1, 18, 9), TILE(1, 18, 8), TILE(1, 18, 9) }, /* 7 grass_mm */
+    { TILE(1, 18, 10), TILE(1, 18, 11), TILE(1, 18, 10), TILE(1, 18, 11) }, /* 8 grass_mr */
 
-    { TILE(1, 16, 0), TILE(1, 17, 0), TILE(1, 16, 1), TILE(1, 17, 1) }, /* hwood_tl */
-    { TILE(1, 16, 1), TILE(1, 17, 1), TILE(1, 16, 1), TILE(1, 17, 1) }, /* hwood_tm */
-    { TILE(1, 16, 1), TILE(1, 17, 1), TILE(1, 16, 2), TILE(1, 17, 2) }, /* hwood_tr */
-    { TILE(1, 18, 0), TILE(1, 19, 0), TILE(1, 18, 1), TILE(1, 19, 1) }, /* hwood_bl */
-    { TILE(1, 18, 1), TILE(1, 19, 1), TILE(1, 18, 1), TILE(1, 19, 1) }, /* hwood_bm */
-    { TILE(1, 18, 1), TILE(1, 19, 1), TILE(1, 18, 2), TILE(1, 19, 2) }, /* hwood_br */
+    { TILE(1, 16, 0), TILE(1, 17, 0), TILE(1, 16, 1), TILE(1, 17, 1) }, /* 9 hwood_tl */
+    { TILE(1, 16, 1), TILE(1, 17, 1), TILE(1, 16, 1), TILE(1, 17, 1) }, /* 10 hwood_tm */
+    { TILE(1, 16, 1), TILE(1, 17, 1), TILE(1, 16, 2), TILE(1, 17, 2) }, /* 11 hwood_tr */
+    { TILE(1, 18, 0), TILE(1, 19, 0), TILE(1, 18, 1), TILE(1, 19, 1) }, /* 12 hwood_bl */
+    { TILE(1, 18, 1), TILE(1, 19, 1), TILE(1, 18, 1), TILE(1, 19, 1) }, /* 13 hwood_bm */
+    { TILE(1, 18, 1), TILE(1, 19, 1), TILE(1, 18, 2), TILE(1, 19, 2) }, /* 14 hwood_br */
 
-    { TILE(7, 24, 12), TILE(7, 25, 12), TILE(7, 24, 13), TILE(7, 25, 13) }, /* pipe_tl */
-    { TILE(7, 24, 14), TILE(7, 25, 14), TILE(7, 24, 15), TILE(7, 25, 15) }, /* pipe_tr */
-    { TILE(7, 26, 12), TILE(7, 26, 12), TILE(7, 26, 13), TILE(7, 26, 13) }, /* pipe_bl */
-    { TILE(7, 26, 14), TILE(7, 26, 14), TILE(7, 26, 15), TILE(7, 26, 15) }, /* pipe_br */
+    { TILE(7, 24, 12), TILE(7, 25, 12), TILE(7, 24, 13), TILE(7, 25, 13) }, /* 15 pipe_tl */
+    { TILE(7, 24, 14), TILE(7, 25, 14), TILE(7, 24, 15), TILE(7, 25, 15) }, /* 16 pipe_tr */
+    { TILE(7, 26, 12), TILE(7, 26, 12), TILE(7, 26, 13), TILE(7, 26, 13) }, /* 17 pipe_bl */
+    { TILE(7, 26, 14), TILE(7, 26, 14), TILE(7, 26, 15), TILE(7, 26, 15) }, /* 18 pipe_br */
 
-    { TILE(6, 2, 0), TILE(6, 3, 0), TILE(6, 2, 1), TILE(6, 3, 1) }, /* cloud */
+    { TILE(6, 2, 0), TILE(6, 3, 0), TILE(6, 2, 1), TILE(6, 3, 1) }, /* 19 cloud */
 
-    { TILE(7, 29, 12), TILE(7, 29, 13), TILE(7, 29, 14), TILE(7, 29, 15) }, /* brick */
+    { TILE(7, 29, 12), TILE(7, 29, 13), TILE(7, 29, 14), TILE(7, 29, 15) }, /* 20 brick */
 
-    { TILE(1, 7, 12), TILE(1, 7, 13), TILE(1, 7, 14), TILE(1, 7, 15) }, /* wood */
+    { TILE(1, 7, 12), TILE(1, 7, 13), TILE(1, 7, 14), TILE(1, 7, 15) }, /* 21 wood */
 
-    { TILE(3, 22, 0), TILE(3, 22, 1), TILE(3, 22, 2), TILE(3, 22, 3) }, /* pin_box */
+    { TILE(3, 22, 0), TILE(3, 22, 1), TILE(3, 22, 2), TILE(3, 22, 3) }, /* 22 pin_box */
 
-    { TILE(7, 27, 8), TILE(7, 27, 9), TILE(7, 27, 10), TILE(7, 27, 11) }, /* note_block */
+    { TILE(7, 27, 8), TILE(7, 27, 9), TILE(7, 27, 10), TILE(7, 27, 11) }, /* 23 note_block */
 
-    { TILE(7, 25, 8), TILE(7, 25, 9), TILE(7, 25, 10), TILE(7, 25, 11) }, /* qmark_block */
+    { TILE(7, 25, 8), TILE(7, 25, 9), TILE(7, 25, 10), TILE(7, 25, 11) }, /* 24 qmark_block */
 
-    { TILE(3, 0, 10), TILE(3, 0, 11), TILE(3, 0, 12), TILE(3, 0, 13) }, /* shiny_block */
+    { TILE(3, 0, 10), TILE(3, 0, 11), TILE(3, 0, 12), TILE(3, 0, 13) }, /* 25 shiny_block */
 
-    { TILE(2, 9, 0), TILE(2, 9, 1), TILE(2, 9, 2), TILE(2, 9, 3) }, /* u_block */
+    { TILE(2, 9, 0), TILE(2, 9, 1), TILE(2, 9, 2), TILE(2, 9, 3) }, /* 26 u_block */
 
-    { TILE(6, 16, 10), TILE(6, 17, 10), TILE(6, 16, 11), TILE(6, 17, 11) }, /* vwood_tl */
-    { TILE(6, 16, 12), TILE(6, 17, 12), TILE(6, 16, 13), TILE(6, 17, 13) }, /* vwood_tr */
-    { TILE(6, 18, 10), TILE(6, 19, 10), TILE(6, 18, 11), TILE(6, 19, 11) }, /* vwood_bl */
-    { TILE(6, 18, 12), TILE(6, 19, 12), TILE(6, 18, 13), TILE(6, 19, 13) }, /* vwood_br */
+    { TILE(6, 16, 10), TILE(6, 17, 10), TILE(6, 16, 11), TILE(6, 17, 11) }, /*27 vwood_tl */
+    { TILE(6, 16, 12), TILE(6, 17, 12), TILE(6, 16, 13), TILE(6, 17, 13) }, /* 28 vwood_tr */
+    { TILE(6, 18, 10), TILE(6, 19, 10), TILE(6, 18, 11), TILE(6, 19, 11) }, /* 29 vwood_bl */
+    { TILE(6, 18, 12), TILE(6, 19, 12), TILE(6, 18, 13), TILE(6, 19, 13) }, /* 30 vwood_br */
 
-    { TILE(6, 1, 0), TILE(6, 1, 2), TILE(6, 0, 14), TILE(7, 31, 13) }, /* bpin_tl */
-    { TILE(6, 0, 14), TILE(7, 31, 13), TILE(6, 0, 14), TILE(7, 31, 13) }, /* bpin_tm */
-    { TILE(6, 0, 14), TILE(7, 31, 13), TILE(6, 1, 1), TILE(6, 1, 5) }, /* bpin_tr */
-    { TILE(6, 1, 2), TILE(6, 1, 2), TILE(7, 31, 13), TILE(7, 31, 13) }, /* bpin_ml */
-    { TILE(7, 31, 13), TILE(7, 31, 13), TILE(7, 31, 13), TILE(7, 31, 13) }, /* bpin_mm */
-    { TILE(7, 31, 13), TILE(7, 31, 13), TILE(6, 1, 5), TILE(6, 1, 5) }, /* bpin_mr */
-    { TILE(6, 1, 2), TILE(6, 1, 6), TILE(7, 31, 13), TILE(6, 0, 12) }, /* bpin_bl */
-    { TILE(7, 31, 13), TILE(6, 0, 12), TILE(7, 31, 13), TILE(6, 0, 12) }, /* bpin_bm */
-    { TILE(7, 31, 13), TILE(6, 0, 12), TILE(6, 1, 5), TILE(6, 1, 7) }, /* bpin_br */
+    { TILE(6, 1, 0), TILE(6, 1, 2), TILE(6, 0, 14), TILE(7, 31, 13) }, /* 31 bpin_tl */
+    { TILE(6, 0, 14), TILE(7, 31, 13), TILE(6, 0, 14), TILE(7, 31, 13) }, /* 32 bpin_tm */
+    { TILE(6, 0, 14), TILE(7, 31, 13), TILE(6, 1, 1), TILE(6, 1, 5) }, /* 33 bpin_tr */
+    { TILE(6, 1, 2), TILE(6, 1, 2), TILE(7, 31, 13), TILE(7, 31, 13) }, /* 34 bpin_ml */
+    { TILE(7, 31, 13), TILE(7, 31, 13), TILE(7, 31, 13), TILE(7, 31, 13) }, /* 35 bpin_mm */
+    { TILE(7, 31, 13), TILE(7, 31, 13), TILE(6, 1, 5), TILE(6, 1, 5) }, /* 36 bpin_mr */
+    { TILE(6, 1, 2), TILE(6, 1, 6), TILE(7, 31, 13), TILE(6, 0, 12) }, /* 37 bpin_bl */
+    { TILE(7, 31, 13), TILE(6, 0, 12), TILE(7, 31, 13), TILE(6, 0, 12) }, /* 38 bpin_bm */
+    { TILE(7, 31, 13), TILE(6, 0, 12), TILE(6, 1, 5), TILE(6, 1, 7) }, /* 39 bpin_br */
 
-    { TILE(11, 7, 4), TILE(11, 7, 5), TILE(11, 7, 6), TILE(11, 7, 7) }, /* o_block */
+    { TILE(11, 7, 4), TILE(11, 7, 5), TILE(11, 7, 6), TILE(11, 7, 7) }, /* 40 o_block */
 
-    { TILE(13, 21, 0), TILE(13, 21, 1), TILE(13, 21, 2), TILE(13, 21, 3) }, /* hbush_l */
-    { TILE(13, 21, 4), TILE(13, 21, 5), TILE(13, 21, 2), TILE(13, 21, 3) }, /* hbush_m */
-    { TILE(13, 21, 4), TILE(13, 21, 5), TILE(13, 21, 6), TILE(13, 21, 7) }, /* hbush_r */
+    { TILE(13, 21, 0), TILE(13, 21, 1), TILE(13, 21, 2), TILE(13, 21, 3) }, /* 41 hbush_l */
+    { TILE(13, 21, 4), TILE(13, 21, 5), TILE(13, 21, 2), TILE(13, 21, 3) }, /* 42 hbush_m */
+    { TILE(13, 21, 4), TILE(13, 21, 5), TILE(13, 21, 6), TILE(13, 21, 7) }, /* 43 hbush_r */
 
-    { TILE(13, 11, 4), TILE(13, 11, 7), TILE(13, 11, 5), TILE(13, 0, 5) }, /* rbridge_l */
-    { TILE(13, 11, 4), TILE(13, 11, 7), TILE(13, 11, 5), TILE(13, 0, 5) }, /* rbridge_m */
-    { TILE(13, 11, 6), TILE(13, 11, 7), TILE(13, 0, 5), TILE(13, 0, 5) }, /* rbridge_r */
+    { TILE(13, 11, 4), TILE(13, 11, 7), TILE(13, 11, 5), TILE(13, 0, 5) }, /* 44 rbridge_l */
+    { TILE(13, 11, 4), TILE(13, 11, 7), TILE(13, 11, 5), TILE(13, 0, 5) }, /* 45 rbridge_m */
+    { TILE(13, 11, 6), TILE(13, 11, 7), TILE(13, 0, 5), TILE(13, 0, 5) }, /* 46 rbridge_r */
 
-    { TILE(6, 6, 11), TILE(6, 6, 15), TILE(6, 6, 12), TILE(6, 7, 0) }, /* tree_tl */
-    { TILE(6, 6, 13), TILE(6, 7, 1), TILE(6, 6, 14), TILE(6, 7, 2) }, /* tree_tr */
-    { TILE(6, 0, 5), TILE(6, 0, 5), TILE(6, 7, 3), TILE(6, 7, 3) }, /* tree_bl */
-    { TILE(6, 7, 4), TILE(6, 7, 4), TILE(6, 0, 5), TILE(6, 0, 5) }, /* tree_br */
+    { TILE(6, 6, 11), TILE(6, 6, 15), TILE(6, 6, 12), TILE(6, 7, 0) }, /*47 tree_tl */
+    { TILE(6, 6, 13), TILE(6, 7, 1), TILE(6, 6, 14), TILE(6, 7, 2) }, /*48 tree_tr */
+    { TILE(6, 0, 5), TILE(6, 0, 5), TILE(6, 7, 3), TILE(6, 7, 3) }, /*49 tree_bl */
+    { TILE(6, 7, 4), TILE(6, 7, 4), TILE(6, 0, 5), TILE(6, 0, 5) }, /*50 tree_br */
+
+    { TILE(12, 26, 4), TILE(12, 26, 5), TILE(12, 26, 6), TILE(12, 26, 7)}, /*51 bulletb_head*/
+    { TILE(12, 30, 12), TILE(12, 30, 13), TILE(12, 30, 14), TILE(12, 30, 15)}, /*52 bulletb_top*/
+    { TILE(12, 30, 4), TILE(12, 30, 4), TILE(12, 30, 5), TILE(12, 30, 5)}, /*53 bulletb_bottom*/
+
+    { TILE(7, 30, 8), TILE(7, 30, 9), TILE(7, 30, 10), TILE(7, 30, 11) }, /*54 coin */
 };
 
 const struct obj1d objs1d[256] = {
@@ -192,6 +199,22 @@ const struct obj1d objs1d[256] = {
         .start = 49,
         .flags = O1_MIDDLE
     },
+    (struct obj1d) /* BULLETB_HEAD */{
+        .start = 51,
+        .flags = O1_MIDDLE
+    },
+    (struct obj1d)/* BULLETB_TOP */{
+        .start = 52,
+        .flags = O1_MIDDLE
+    },
+    (struct obj1d)/* BULLETB_BOTTOM */{
+        .start = 53,
+        .flags = O1_MIDDLE
+    },
+    (struct obj1d) /* COIN */ {
+        .start = 54, 
+        .flags = O1_MIDDLE,
+    },
 };
 
 const struct obj2d objs2d[256] = {
@@ -288,6 +311,20 @@ const struct obj2d objs2d[256] = {
         .start = (uint16_t []) { O1(25, 0), O1(26, 0), O1(26, 0)},
         .flags =  O2_VERTICAL | O2_TERMINAL | O2_MIDDLE,
     },
+    (struct obj2d){
+        // BULLETB_HEAD
+        .start = (uint16_t []) { O1(27, 0), O1(27, 0), O1(27, 0)},
+        .flags = O2_VERTICAL,
+    },
+    (struct obj2d){
+        // BULLETB_SHAFT
+        .start = (uint16_t []) { O1(28, 0), O1(29, 0), O1(29, 0)},
+        .flags =  O2_VERTICAL | O2_TERMINAL,
+    },
+    (struct obj2d) /* COIN */ {
+        .start = (uint16_t []) { O1(30, 0)},
+        .flags = O2_VERTICAL,
+    },
 };
 
 
@@ -298,12 +335,6 @@ const uint32_t *active_map;
 uint8_t active_screen;
 uint8_t read_offset;
 uint8_t write_offset;
-struct block_entry {
-    uint8_t id;
-    uint8_t palette;
-};
-
-struct block_entry block_buffer[N_SCREENS][16][16];
 
 
 void stream_screen(bool reverse) {
@@ -323,23 +354,23 @@ void stream_screen(bool reverse) {
         const bool middle = obj.flags & O2_MIDDLE;
         const bool vertical = obj.flags & O2_VERTICAL;
 
-        fprintf(stderr, "o2: %b terminal %032b\n", o, terminal);
+        //fprintf(stderr, "o2: %b terminal %032b\n", o, terminal);
 
         uint16_t o1;
         uint8_t o1_offset = 0;
         for (uint8_t i = 0; i < height; i++) {
             if (terminal && (i == 0)) {
                 o1 = obj.start[o1_offset];
-                fprintf(stderr, "\tstarting o1 %u: %016b\n", o1_offset, o1);
+                //fprintf(stderr, "\tstarting o1 %u: %016b\n", o1_offset, o1);
                 o1_offset++;
             } else if (terminal && (i == height - 1)) {
                 if (middle && height > 2)
                     o1_offset++;
                 o1 = obj.start[o1_offset];
-                fprintf(stderr, "\tending o1 %u: %016b\n", o1_offset, o1);
+                //fprintf(stderr, "\tending o1 %u: %016b\n", o1_offset, o1);
             } else {
                 o1 = obj.start[o1_offset];
-                fprintf(stderr, "\tmiddle o1 %u: %016b\n", o1_offset, o1);
+                //fprintf(stderr, "\tmiddle o1 %u: %016b\n", o1_offset, o1);
             }
 
             // draw o1
@@ -356,15 +387,15 @@ void stream_screen(bool reverse) {
                 uint8_t block;
                 if (j == 0) {
                     block = obj1.start;
-                    fprintf(stderr, "\t\tstart block %u: %u\n", j, block);
+                    //fprintf(stderr, "\t\tstart block %u: %u\n", j, block);
                     if (!o1_middle)
                         cont = false;
                 } else if (j == width - 1) {
                     block = obj1.start + (o1_terminal ? 1 : 0) + (middle ? 1 : 0);
-                    fprintf(stderr, "\t\tend block %u: %u\n", j, block);
+                    //fprintf(stderr, "\t\tend block %u: %u\n", j, block);
                 } else {
                     block = obj1.start + (o1_terminal ? 1 : 0);
-                    fprintf(stderr, "\t\tmiddle block %u: %u\n", j, block);
+                    //fprintf(stderr, "\t\tmiddle block %u: %u\n", j, block);
                 }
 
                 if (vertical) {
